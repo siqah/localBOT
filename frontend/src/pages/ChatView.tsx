@@ -3,7 +3,7 @@ import {
     Send, Sparkles, FileText, ChevronDown, ChevronUp,
     Loader2, MessageSquare, Brain, Zap, BookOpen, Code
 } from 'lucide-react';
-import { api, type ChatResponse, type SourceRef, type ChatMessage } from '../lib/api';
+import { api, type ChatResponse, type SourceRef } from '../lib/api';
 
 interface Message {
     id: string;
