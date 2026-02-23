@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { HashRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import {
     MessageSquare, FileText, Search, Settings, Brain,
-    Shield, Moon, Sun, Menu, X, Zap, Leaf
+    Moon, Sun, Menu, X, Zap, Leaf
 } from 'lucide-react';
 import ChatView from './pages/ChatView';
 import DocumentsView from './pages/DocumentsView';

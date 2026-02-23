@@ -91,23 +91,9 @@ async function deleteDocumentChunks(documentId) {
   }
 }
 
-/**
- * Ping check
- */
-async function esPing() {
-  if (!index) throw new Error("Vector DB not initialized");
-  return "PONG";
-}
-
-function getESClient() {
-  return index;
-}
-
 module.exports = {
   initElasticsearch,
   indexChunk,
   searchSimilar,
   deleteDocumentChunks,
-  esPing,
-  getESClient,
 };

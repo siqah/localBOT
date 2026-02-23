@@ -17,13 +17,6 @@ async function initRedis() {
 }
 
 /**
- * Get the cache instance
- */
-function getRedis() {
-  return cache;
-}
-
-/**
  * Cache a value with optional TTL (seconds)
  */
 async function cacheSet(key, value, ttlSeconds = 300) {
@@ -63,18 +56,9 @@ async function cacheDel(key) {
   }
 }
 
-/**
- * Ping cache (always resolves)
- */
-async function redisPing() {
-  return "PONG";
-}
-
 module.exports = {
   initRedis,
-  getRedis,
   cacheSet,
   cacheGet,
   cacheDel,
-  redisPing,
 };
