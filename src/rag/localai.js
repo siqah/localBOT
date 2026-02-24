@@ -108,8 +108,9 @@ async function chatCompletion(systemPrompt, userMessage, contextStr = "") {
 
   const { LlamaChatSession } = await import("node-llama-cpp");
 
+  const sequence = llamaContext.getSequence();
   const session = new LlamaChatSession({
-    contextSequence: llamaContext.getSequence(),
+    contextSequence: sequence,
     systemPrompt: systemPrompt,
   });
 
@@ -118,12 +119,17 @@ async function chatCompletion(systemPrompt, userMessage, contextStr = "") {
     fullPrompt = `Context information is below.\n---------------------\n${contextStr}\n---------------------\nGiven the context information and not prior knowledge, answer the query.\nQuery: ${userMessage}`;
   }
 
-  const response = await session.prompt(fullPrompt, {
-    temperature: 0.1,
-    maxTokens: 2048,
-  });
+  try {
+    const response = await session.prompt(fullPrompt, {
+      temperature: 0.1,
+      maxTokens: 2048,
+    });
 
-  return response;
+    return response;
+  } finally {
+    session.dispose();
+    sequence.dispose();
+  }
 }
 
 /**

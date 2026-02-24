@@ -67,15 +67,18 @@ async function parseFile(filePath) {
 
     // ── PDF ──
     case ".pdf": {
-      const pdfParse = require("pdf-parse");
+      const { PDFParse } = require("pdf-parse");
       const buffer = fs.readFileSync(filePath);
-      const data = await pdfParse(buffer);
-      if (!data.text || data.text.trim().length === 0) {
+      const pdfParser = new PDFParse({ data: buffer, verbosity: 0 });
+      await pdfParser.load();
+      const text = await pdfParser.getText();
+      await pdfParser.destroy();
+      if (!text || text.trim().length === 0) {
         throw new Error(
           "PDF contains no extractable text (may be scanned/image-only)",
         );
       }
-      return data.text;
+      return text;
     }
 
     // ── DOCX (Word) ──
