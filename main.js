@@ -14,9 +14,19 @@ const { logger } = require("./src/utils/logger");
 let mainWindow;
 
 function createWindow() {
+  // Resolve icon path per platform
+  const iconExt =
+    process.platform === "darwin"
+      ? "icon.icns"
+      : process.platform === "win32"
+        ? "icon.ico"
+        : "icon.png";
+  const iconPath = path.join(__dirname, "build", iconExt);
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: iconPath,
     titleBarStyle: "hidden", // Mac-style hidden titlebar
     titleBarOverlay: true, // Windows controls
     webPreferences: {
@@ -25,6 +35,11 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
     },
   });
+
+  // Set macOS dock icon
+  if (process.platform === "darwin" && app.dock) {
+    app.dock.setIcon(iconPath);
+  }
 
   // Load the React frontend
   if (isDev) {
