@@ -38,7 +38,7 @@ function AppContent() {
     return (
         <div className="flex h-screen overflow-hidden bg-surface-50 dark:bg-surface-950 transition-colors duration-300">
             {/* ── Sidebar ────────────────────── */}
-            <aside className={`${sidebarOpen ? 'w-64' : 'w-0 -ml-64'} transition-all duration-300 flex flex-col border-r border-surface-200 dark:border-surface-800/50 bg-white dark:bg-surface-950/90 backdrop-blur-xl`}>
+            <aside className={`w-64 flex-shrink-0 transition-all duration-300 flex flex-col border-r border-surface-200 dark:border-surface-800/50 bg-white dark:bg-surface-950/90 backdrop-blur-xl ${sidebarOpen ? 'ml-0' : '-ml-64'}`}>
                 {/* Logo */}
                 <div className="p-5 border-b border-surface-200 dark:border-surface-800/50">
                     <div className="flex items-center gap-3">
@@ -97,12 +97,13 @@ function AppContent() {
             {/* ── Main Content ──────────────── */}
             <main className="flex-1 flex flex-col overflow-hidden">
                 {/* Top Bar */}
-                <header className="h-14 flex items-center px-4 border-b border-surface-200 dark:border-surface-800/50 bg-white/80 dark:bg-surface-950/80 backdrop-blur-xl">
+                <header className="h-14 flex items-center px-4 border-b border-surface-200 dark:border-surface-800/50 bg-white/80 dark:bg-surface-950/80 backdrop-blur-xl shrink-0">
                     <button
                         onClick={() => setSidebarOpen(!sidebarOpen)}
-                        className="btn-ghost mr-3"
+                        className="btn-ghost mr-3 p-2 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-800 transition-colors"
+                        aria-label="Toggle Sidebar"
                     >
-                        {sidebarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                        {sidebarOpen ? <X className="w-5 h-5 text-surface-600 dark:text-surface-400" /> : <Menu className="w-5 h-5 text-surface-900 dark:text-white" />}
                     </button>
 
                     <div className="flex items-center gap-2">
