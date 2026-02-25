@@ -91,6 +91,14 @@ function listSessions() {
     .all();
 }
 
+function deleteSession(id) {
+  const db = getDB();
+  db.transaction(() => {
+    db.prepare("DELETE FROM chat_messages WHERE session_id = ?").run(id);
+    db.prepare("DELETE FROM chat_sessions WHERE id = ?").run(id);
+  })();
+}
+
 // ── Chat Message Operations ─────────────────────
 
 function createMessage({ sessionId, role, content, sources = [] }) {
@@ -163,6 +171,7 @@ module.exports = {
   getChunksByDocument,
   createSession,
   listSessions,
+  deleteSession,
   createMessage,
   getMessagesBySession,
   getStats,

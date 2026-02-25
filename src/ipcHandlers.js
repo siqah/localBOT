@@ -181,6 +181,17 @@ function registerIpcHandlers() {
     }
   });
 
+  ipcMain.handle("chat:deleteSession", async (event, id) => {
+    try {
+      repo.deleteSession(id);
+      logger.info(`Session deleted: ${id}`);
+      return { success: true };
+    } catch (err) {
+      logger.error("Error deleting session:", err);
+      throw err;
+    }
+  });
+
   ipcMain.handle("chat:messages", async (event, sessionId) => {
     try {
       return repo.getMessagesBySession(sessionId);

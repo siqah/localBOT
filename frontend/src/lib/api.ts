@@ -134,6 +134,8 @@ export const api = {
   chat: (question: string, sessionId?: string) =>
     ipcCall<ChatResponse>("chat:query", { question, session_id: sessionId }),
   listSessions: () => ipcCall<ChatSession[]>("chat:sessions"),
+  deleteSession: (id: string) =>
+    ipcCall<{ success: boolean }>("chat:deleteSession", id),
   getSessionMessages: (sessionId: string) =>
     ipcCall<ChatMessage[]>("chat:messages", sessionId),
 

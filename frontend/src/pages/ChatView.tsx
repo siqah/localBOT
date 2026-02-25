@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import {
     Send, Sparkles, FileText, ChevronDown, ChevronUp,
     Loader2, MessageSquare, Brain, Zap, BookOpen, Code,
-    Menu, Plus, X, Clock
+    Menu, Plus, X, Clock, Trash2
 } from 'lucide-react';
 import { api, type ChatResponse, type SourceRef, type ChatSession, type ChatMessage } from '../lib/api';
 
@@ -74,6 +74,19 @@ export default function ChatView() {
         setSessionId(null);
         setMessages([]);
         setHistoryOpen(false);
+    };
+
+    const handleDeleteSession = async (e: React.MouseEvent, id: string) => {
+        e.stopPropagation();
+        try {
+            await api.deleteSession(id);
+            if (sessionId === id) {
+                startNewChat();
+            }
+            loadSessions();
+        } catch (err) {
+            console.error('Failed to delete session', err);
+        }
     };
 
     useEffect(() => {
@@ -302,18 +315,26 @@ export default function ChatView() {
                         </div>
                     ) : (
                         sessions.map(session => (
-                            <button
-                                key={session.id}
-                                onClick={() => loadSessionMessages(session.id)}
-                                className={`w-full text-left p-3 rounded-xl transition-all ${sessionId === session.id
-                                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 font-medium'
-                                    : 'hover:bg-surface-100 dark:hover:bg-surface-800/50 text-surface-700 dark:text-surface-300'}`}
-                            >
-                                <div className="line-clamp-2 text-sm leading-snug">{session.title}</div>
-                                <div className="text-[10px] mt-2 opacity-60">
-                                    {new Date(session.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                                </div>
-                            </button>
+                            <div key={session.id} className="relative group flex items-center">
+                                <button
+                                    onClick={() => loadSessionMessages(session.id)}
+                                    className={`flex-1 text-left p-3 pr-10 rounded-xl transition-all ${sessionId === session.id
+                                        ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 font-medium'
+                                        : 'hover:bg-surface-100 dark:hover:bg-surface-800/50 text-surface-700 dark:text-surface-300'}`}
+                                >
+                                    <div className="line-clamp-2 text-sm leading-snug">{session.title}</div>
+                                    <div className="text-[10px] mt-2 opacity-60">
+                                        {new Date(session.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                    </div>
+                                </button>
+                                <button
+                                    onClick={(e) => handleDeleteSession(e, session.id)}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-surface-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 opacity-0 group-hover:opacity-100 transition-all focus:opacity-100"
+                                    aria-label="Delete Session"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
                         ))
                     )}
                 </div>
