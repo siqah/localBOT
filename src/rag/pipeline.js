@@ -1,4 +1,8 @@
-const { generateEmbedding, chatCompletion } = require("./localai");
+const {
+  generateEmbedding,
+  chatCompletion,
+  chatCompletionStream,
+} = require("./localai");
 const {
   indexChunk,
   searchSimilar,
@@ -6,21 +10,14 @@ const {
 } = require("./elasticsearch");
 const { logger } = require("../utils/logger");
 
-// Default chunking parameters (previously in config.js)
+// Default chunking parameters
 const DEFAULT_CHUNK_SIZE = 500;
 const DEFAULT_CHUNK_OVERLAP = 50;
 
-const RAG_SYSTEM_PROMPT = `You are a helpful, private AI assistant named LocalBOT. You answer questions based ONLY on the provided context from the user's local knowledge base. If the context doesn't contain enough information to answer the question, say so honestly. Always cite which documents your answer comes from. Be concise and accurate.`;
+const RAG_SYSTEM_PROMPT = `You are LocalBOT, a helpful AI assistant. Answer the user's question using the provided context. Always reference which source documents you used. Keep answers clear and concise.`;
 
 // ── Text Chunking ───────────────────────────────
 
-/**
- * Split text into overlapping chunks by word count
- * @param {string} text - Input text
- * @param {number} chunkSize - Words per chunk
- * @param {number} overlap - Overlap words between chunks
- * @returns {Array<{content: string, index: number, startChar: number, endChar: number}>}
- */
 function chunkText(
   text,
   chunkSize = DEFAULT_CHUNK_SIZE,
@@ -59,39 +56,47 @@ function chunkText(
 // ── RAG Query Pipeline ──────────────────────────
 
 /**
- * Full RAG pipeline: embed query → search → generate answer
- * @param {string} question - User's question
- * @returns {{ answer: string, hits: Array }}
+ * Full RAG pipeline (non-streaming)
  */
 async function ragQuery(question) {
-  // 1. Generate query embedding
   const queryEmbedding = await generateEmbedding(question);
+  const hits = await searchSimilar(queryEmbedding, 3);
 
-  // 2. Search for relevant chunks
-  const hits = await searchSimilar(queryEmbedding, 5);
-
-  // 3. Build context from hits
   const contextParts = hits.map(
     (hit, i) =>
       `[Source ${i + 1}: ${hit.documentName} (chunk ${hit.chunkIndex + 1})]\n${hit.content}`,
   );
-  const contextStr = contextParts.join("\n\n---\n\n");
-
-  // 4. Generate answer using LLM
+  const contextStr = contextParts.join("\n\n");
   const answer = await chatCompletion(RAG_SYSTEM_PROMPT, question, contextStr);
+
+  return { answer, hits };
+}
+
+/**
+ * Streaming RAG pipeline — calls onToken for each generated token
+ */
+async function ragQueryStream(question, onToken) {
+  const queryEmbedding = await generateEmbedding(question);
+  const hits = await searchSimilar(queryEmbedding, 3);
+
+  const contextParts = hits.map(
+    (hit, i) =>
+      `[Source ${i + 1}: ${hit.documentName} (chunk ${hit.chunkIndex + 1})]\n${hit.content}`,
+  );
+  const contextStr = contextParts.join("\n\n");
+
+  const answer = await chatCompletionStream(
+    RAG_SYSTEM_PROMPT,
+    question,
+    contextStr,
+    onToken,
+  );
 
   return { answer, hits };
 }
 
 // ── Document Processing ─────────────────────────
 
-/**
- * Process a document: chunk → embed → index
- * @param {string} docId - Document UUID
- * @param {string} docName - Original filename
- * @param {string} content - Raw text content
- * @returns {number} Number of chunks processed
- */
 async function processDocumentContent(docId, docName, content) {
   const chunks = chunkText(content);
 
@@ -103,10 +108,8 @@ async function processDocumentContent(docId, docName, content) {
 
   for (const chunk of chunks) {
     try {
-      // Generate embedding
       const embedding = await generateEmbedding(chunk.content);
 
-      // Index in Elasticsearch
       await indexChunk({
         documentId: docId,
         documentName: docName,
@@ -130,6 +133,7 @@ async function processDocumentContent(docId, docName, content) {
 module.exports = {
   chunkText,
   ragQuery,
+  ragQueryStream,
   processDocumentContent,
   deleteDocumentChunks,
 };

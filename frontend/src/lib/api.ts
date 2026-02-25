@@ -77,6 +77,9 @@ declare global {
     electron: {
       invoke: (channel: string, data?: any) => Promise<any>;
       getPathForFile: (file: File) => string;
+      onChatToken: (callback: (token: string) => void) => void;
+      onChatTokenDone: (callback: () => void) => void;
+      removeChatTokenListeners: () => void;
     };
   }
 }

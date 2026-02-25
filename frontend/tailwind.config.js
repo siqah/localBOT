@@ -5,56 +5,68 @@ export default {
   theme: {
     extend: {
       colors: {
-        /* ── Forest Green Primary (Dark Mode accent) ── */
+        /* ── Indigo/Violet Primary ── */
         primary: {
-          50: "#f0fdf4",
-          100: "#dcfce7",
-          200: "#bbf7d0",
-          300: "#86efac",
-          400: "#4ade80",
-          500: "#22c55e",
-          600: "#16a34a",
-          700: "#15803d",
-          800: "#166534",
-          900: "#14532d",
-          950: "#052e16",
+          50: "#eef2ff",
+          100: "#e0e7ff",
+          200: "#c7d2fe",
+          300: "#a5b4fc",
+          400: "#818cf8",
+          500: "#6366f1", // primary indigo
+          600: "#4f46e5",
+          700: "#4338ca",
+          800: "#3730a3",
+          900: "#312e81",
+          950: "#1e1b4b",
         },
-        /* ── Dark surfaces (forest-tinted) ── */
+        /* ── Clean Slate Surfaces ── */
         surface: {
-          50: "#f8faf9",
-          100: "#f0f4f1",
-          200: "#dce5de",
-          300: "#b8c9bc",
-          400: "#8ca694",
-          500: "#6b8b73",
-          600: "#506b57",
-          700: "#3a5240",
-          800: "#1a2e1f",
-          900: "#0f1f13",
-          950: "#081209",
+          50: "#f8fafc",
+          100: "#f1f5f9",
+          200: "#e2e8f0",
+          300: "#cbd5e1",
+          400: "#94a3b8",
+          500: "#64748b",
+          600: "#475569",
+          700: "#334155",
+          800: "#1e293b",
+          900: "#0f172a",
+          950: "#020617",
         },
-        /* ── Accent (Emerald glow) ── */
+        /* ── Vibrant Violet Accent ── */
         accent: {
-          400: "#34d399",
-          500: "#10b981",
-          600: "#059669",
+          400: "#a78bfa",
+          500: "#8b5cf6",
+          600: "#7c3aed",
         },
       },
       fontFamily: {
+        heading: [
+          '"Plus Jakarta Sans"',
+          "system-ui",
+          "-apple-system",
+          "sans-serif",
+        ],
         sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
         mono: ["JetBrains Mono", "Fira Code", "monospace"],
       },
       animation: {
-        "fade-in": "fadeIn 0.3s ease-out",
+        "fade-in": "fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+        "fade-in-up": "fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards",
         "slide-up": "slideUp 0.3s ease-out",
         "slide-in-right": "slideInRight 0.3s ease-out",
         "pulse-subtle": "pulseSubtle 2s infinite",
         glow: "glow 2s ease-in-out infinite alternate",
+        blob: "blob 7s infinite",
       },
       keyframes: {
         fadeIn: {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
+        },
+        fadeInUp: {
+          "0%": { opacity: "0", transform: "translateY(15px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
         slideUp: {
           "0%": { opacity: "0", transform: "translateY(10px)" },
@@ -69,8 +81,14 @@ export default {
           "50%": { opacity: "0.7" },
         },
         glow: {
-          "0%": { boxShadow: "0 0 5px rgba(34, 197, 94, 0.2)" },
-          "100%": { boxShadow: "0 0 20px rgba(34, 197, 94, 0.4)" },
+          "0%": { boxShadow: "0 0 5px rgba(99, 102, 241, 0.2)" },
+          "100%": { boxShadow: "0 0 20px rgba(99, 102, 241, 0.4)" },
+        },
+        blob: {
+          "0%": { transform: "translate(0px, 0px) scale(1)" },
+          "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+          "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+          "100%": { transform: "translate(0px, 0px) scale(1)" },
         },
       },
       backdropBlur: {

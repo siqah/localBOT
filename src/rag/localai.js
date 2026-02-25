@@ -55,7 +55,10 @@ async function initAI() {
       // node-llama-cpp v3 uses async factory pattern
       llama = await getLlama();
       llamaModel = await llama.loadModel({ modelPath });
-      llamaContext = await llamaModel.createContext();
+      llamaContext = await llamaModel.createContext({
+        contextSize: 1024, // Smaller = faster on CPU-only
+        batchSize: 512, // Process more tokens per step
+      });
 
       logger.info(`✅ Llama-CPP loaded model: ${ggufFile}`);
     } else {
@@ -116,13 +119,58 @@ async function chatCompletion(systemPrompt, userMessage, contextStr = "") {
 
   let fullPrompt = userMessage;
   if (contextStr) {
-    fullPrompt = `Context information is below.\n---------------------\n${contextStr}\n---------------------\nGiven the context information and not prior knowledge, answer the query.\nQuery: ${userMessage}`;
+    fullPrompt = `Use the following context to answer the question. Cite the source documents.\n\nContext:\n${contextStr}\n\nQuestion: ${userMessage}\n\nAnswer:`;
   }
 
   try {
     const response = await session.prompt(fullPrompt, {
       temperature: 0.1,
-      maxTokens: 2048,
+      maxTokens: 512, // Most answers fit in 200-400 tokens; was 2048
+    });
+
+    return response;
+  } finally {
+    session.dispose();
+    sequence.dispose();
+  }
+}
+
+/**
+ * Streaming chat completions — calls onToken for each generated chunk
+ */
+async function chatCompletionStream(
+  systemPrompt,
+  userMessage,
+  contextStr = "",
+  onToken = () => {},
+) {
+  if (!llamaContext) {
+    throw new Error(
+      "LLM not initialized — no .gguf model found. " +
+        `Place a GGUF model file in: ${modelsDir}`,
+    );
+  }
+
+  const { LlamaChatSession } = await import("node-llama-cpp");
+
+  const sequence = llamaContext.getSequence();
+  const session = new LlamaChatSession({
+    contextSequence: sequence,
+    systemPrompt: systemPrompt,
+  });
+
+  let fullPrompt = userMessage;
+  if (contextStr) {
+    fullPrompt = `Use the following context to answer the question. Cite the source documents.\n\nContext:\n${contextStr}\n\nQuestion: ${userMessage}\n\nAnswer:`;
+  }
+
+  try {
+    const response = await session.prompt(fullPrompt, {
+      temperature: 0.1,
+      maxTokens: 512,
+      onTextChunk(chunk) {
+        onToken(chunk);
+      },
     });
 
     return response;
@@ -144,5 +192,6 @@ module.exports = {
   generateEmbedding,
   generateEmbeddings,
   chatCompletion,
+  chatCompletionStream,
   localAIPing,
 };

@@ -114,14 +114,14 @@ export default function DocumentsView() {
                         <p className="text-surface-600 dark:text-surface-300 font-medium">Uploading & processing...</p>
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center gap-3">
-                        <div className="w-14 h-14 rounded-2xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center">
-                            <Upload className="w-7 h-7 text-primary-400" />
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-16 h-16 rounded-[2rem] bg-gradient-to-br from-primary-500/20 to-primary-700/10 border border-primary-500/30 flex items-center justify-center shadow-lg shadow-primary-500/10">
+                            <Upload className="w-8 h-8 text-primary-500 dark:text-primary-400" />
                         </div>
                         <div>
-                            <p className="text-surface-800 dark:text-surface-200 font-semibold">Drop files here or click to upload</p>
-                            <p className="text-xs text-surface-500 mt-1">
-                                Supports PDF, TXT, MD, DOCX, CSV, JSON, YAML, HTML, XML • Max 50MB per file
+                            <p className="text-xl font-heading text-surface-900 dark:text-white font-bold tracking-tight">Drop files here or click to upload</p>
+                            <p className="text-sm text-surface-500 mt-2 font-medium">
+                                Supports PDF, TXT, MD, DOCX, CSV, JSON, YAML, HTML, XML
                             </p>
                         </div>
                     </div>
@@ -153,16 +153,16 @@ export default function DocumentsView() {
                     <Loader2 className="w-6 h-6 text-primary-400 animate-spin" />
                 </div>
             ) : filteredDocs.length === 0 ? (
-                <div className="glass-card p-12 text-center">
+                <div className="glass-card p-12 text-center animate-fade-in-up">
                     <FileText className="w-10 h-10 text-surface-600 mx-auto mb-3" />
                     <p className="text-surface-400">
                         {searchQuery ? 'No documents match your search' : 'No documents yet — upload some files to get started'}
                     </p>
                 </div>
             ) : (
-                <div className="space-y-2">
-                    {filteredDocs.map(doc => (
-                        <div key={doc.id} className="glass-card-hover p-4 flex items-center gap-4">
+                <div className="space-y-3">
+                    {filteredDocs.map((doc, i) => (
+                        <div key={doc.id} className="glass-card-hover p-4 flex items-center gap-4 animate-fade-in-up" style={{ animationDelay: `${i * 0.05}s` }}>
                             <div className="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center flex-shrink-0">
                                 <FileIcon contentType={doc.content_type} />
                             </div>

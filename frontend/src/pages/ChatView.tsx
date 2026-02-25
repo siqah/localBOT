@@ -36,32 +36,47 @@ export default function ChatView() {
             timestamp: new Date(),
         };
 
+        const assistantId = `assistant-${Date.now()}`;
+
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setIsLoading(true);
+
+        // Add empty assistant message that will be filled by streaming tokens
+        setMessages(prev => [...prev, {
+            id: assistantId,
+            role: 'assistant',
+            content: '',
+            timestamp: new Date(),
+        }]);
+
+        // Listen for streaming tokens
+        window.electron.onChatToken((token: string) => {
+            setMessages(prev => prev.map(msg =>
+                msg.id === assistantId
+                    ? { ...msg, content: msg.content + token }
+                    : msg
+            ));
+        });
 
         try {
             const response: ChatResponse = await api.chat(question, sessionId || undefined);
             setSessionId(response.session_id);
 
-            const assistantMsg: Message = {
-                id: `assistant-${Date.now()}`,
-                role: 'assistant',
-                content: response.answer,
-                sources: response.sources,
-                timestamp: new Date(),
-            };
-
-            setMessages(prev => [...prev, assistantMsg]);
+            // Update final message with sources
+            setMessages(prev => prev.map(msg =>
+                msg.id === assistantId
+                    ? { ...msg, content: response.answer, sources: response.sources }
+                    : msg
+            ));
         } catch (err: any) {
-            const errorMsg: Message = {
-                id: `error-${Date.now()}`,
-                role: 'assistant',
-                content: `⚠️ ${err.message || 'Failed to get response. Is the backend running?'}`,
-                timestamp: new Date(),
-            };
-            setMessages(prev => [...prev, errorMsg]);
+            setMessages(prev => prev.map(msg =>
+                msg.id === assistantId
+                    ? { ...msg, content: `⚠️ ${err.message || 'Failed to get response.'}` }
+                    : msg
+            ));
         } finally {
+            window.electron.removeChatTokenListeners();
             setIsLoading(false);
         }
     };
@@ -81,16 +96,19 @@ export default function ChatView() {
     ];
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full relative">
             {/* Messages Area */}
-            <div className="flex-1 overflow-auto px-4 py-6">
+            <div className="flex-1 overflow-auto px-4 pt-6 pb-32">
                 {messages.length === 0 ? (
                     /* Empty State */
-                    <div className="flex flex-col items-center justify-center h-full max-w-2xl mx-auto animate-fade-in">
-                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500/20 to-primary-700/20 border border-primary-500/20 flex items-center justify-center mb-6">
-                            <Brain className="w-10 h-10 text-primary-500 dark:text-primary-400" />
+                    <div className="flex flex-col items-center justify-center h-full max-w-2xl mx-auto animate-fade-in-up relative">
+                        {/* Glow Behind Icon */}
+                        <div className="absolute top-0 w-64 h-64 bg-primary-500/20 dark:bg-primary-500/10 blur-[80px] rounded-full animate-blob pointer-events-none" />
+
+                        <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-primary-500/20 to-primary-700/10 border border-primary-500/30 flex items-center justify-center mb-8 relative z-10 shadow-xl shadow-primary-500/10">
+                            <Brain className="w-12 h-12 text-primary-500 dark:text-primary-400 drop-shadow-md" />
                         </div>
-                        <h2 className="text-2xl font-bold text-surface-900 dark:text-white mb-2">Ask me anything</h2>
+                        <h2 className="text-3xl font-heading font-bold text-surface-900 dark:text-white mb-3">Ask me anything.</h2>
                         <p className="text-surface-500 dark:text-surface-400 text-center mb-8 max-w-md">
                             I'll search your local knowledge base and provide answers with source citations.
                             All processing happens on your device — nothing leaves your machine.
@@ -140,10 +158,10 @@ export default function ChatView() {
                 )}
             </div>
 
-            {/* Input Area */}
-            <div className="border-t border-surface-200 dark:border-surface-800/50 p-4 bg-white/80 dark:bg-surface-950/80 backdrop-blur-xl">
-                <div className="max-w-3xl mx-auto">
-                    <div className="glass-card flex items-end gap-3 p-3">
+            {/* Floating Input Area */}
+            <div className="p-6 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-surface-950 dark:via-surface-950/80 absolute bottom-0 w-full left-0 z-10 pointer-events-none">
+                <div className="max-w-3xl mx-auto pointer-events-auto">
+                    <div className="glass-card shadow-2xl flex items-end gap-3 p-3 rounded-2xl border border-surface-200 dark:border-surface-700/50">
                         <textarea
                             ref={inputRef}
                             value={input}
@@ -199,10 +217,10 @@ function MessageBubble({ message }: { message: Message }) {
             {/* Content */}
             <div className={`max-w-[80%] ${isUser ? 'text-right' : ''}`}>
                 <div className={`inline-block text-left ${isUser
-                    ? 'bg-primary-600/20 border border-primary-500/20 rounded-2xl rounded-tr-md px-4 py-3'
-                    : 'glass-card px-4 py-3'
+                    ? 'bg-gradient-to-br from-primary-600 to-primary-500 text-white shadow-md shadow-primary-500/20 rounded-3xl rounded-tr-sm px-5 py-3.5'
+                    : 'glass-card px-5 py-4'
                     }`}>
-                    <div className="prose-content text-sm">
+                    <div className={`prose-content text-sm ${isUser ? 'text-white dark:text-white' : ''}`}>
                         {message.content}
                     </div>
                 </div>

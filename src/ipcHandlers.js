@@ -5,7 +5,7 @@ const repo = require("./db/repository");
 const {
   processDocumentContent,
   deleteDocumentChunks,
-  ragQuery,
+  ragQueryStream,
 } = require("./rag/pipeline");
 const { parseFile } = require("./rag/parser");
 const { cacheGet, cacheSet, cacheDel } = require("./cache/redis");
@@ -131,7 +131,15 @@ function registerIpcHandlers() {
       });
 
       const startTime = Date.now();
-      const { answer, hits } = await ragQuery(question);
+
+      // Stream tokens to the renderer as they're generated
+      const { answer, hits } = await ragQueryStream(question, (token) => {
+        event.sender.send("chat:token", token);
+      });
+
+      // Signal streaming is complete
+      event.sender.send("chat:token:done");
+
       const duration = (Date.now() - startTime) / 1000;
 
       const sources = hits.map((hit) => ({

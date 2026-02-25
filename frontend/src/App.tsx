@@ -49,7 +49,7 @@ function AppContent() {
                             <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-surface-950" />
                         </div>
                         <div>
-                            <h1 className="text-lg font-bold text-surface-900 dark:text-white tracking-tight">LocalBOT</h1>
+                            <h1 className="text-xl font-heading font-bold text-surface-900 dark:text-white tracking-tight">LocalBOT</h1>
                             <p className="text-[11px] text-surface-500 font-medium">Private AI Assistant</p>
                         </div>
                     </div>
@@ -112,7 +112,7 @@ function AppContent() {
                                 return <Icon className="w-4 h-4 text-primary-600 dark:text-primary-400" />;
                             })()
                         }
-                        <h2 className="text-sm font-semibold text-surface-800 dark:text-surface-200">
+                        <h2 className="text-sm font-heading font-semibold text-surface-800 dark:text-surface-200">
                             {navItems.find(n => n.to === location.pathname)?.label || 'LocalBOT'}
                         </h2>
                     </div>

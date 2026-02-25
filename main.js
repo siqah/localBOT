@@ -14,14 +14,9 @@ const { logger } = require("./src/utils/logger");
 let mainWindow;
 
 function createWindow() {
-  // Resolve icon path per platform
-  const iconExt =
-    process.platform === "darwin"
-      ? "icon.icns"
-      : process.platform === "win32"
-        ? "icon.ico"
-        : "icon.png";
-  const iconPath = path.join(__dirname, "build", iconExt);
+  // Use .png at runtime (Electron nativeImage supports png/jpg/gif)
+  // .icns and .ico are used automatically by electron-builder for production builds
+  const iconPath = path.join(__dirname, "build", "icon.png");
 
   mainWindow = new BrowserWindow({
     width: 1200,

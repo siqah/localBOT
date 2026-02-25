@@ -62,7 +62,7 @@ export default function SettingsView() {
             {/* Page Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-xl font-bold text-surface-900 dark:text-white flex items-center gap-2">
+                    <h1 className="text-2xl font-heading font-bold text-surface-900 dark:text-white flex items-center gap-2">
                         <SettingsIcon className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                         Settings & Status
                     </h1>
@@ -99,7 +99,7 @@ export default function SettingsView() {
 
             {/* System Health */}
             <section>
-                <h2 className="text-sm font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <h2 className="text-sm font-heading font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                     <Activity className="w-4 h-4" />
                     System Health
                 </h2>
@@ -111,7 +111,7 @@ export default function SettingsView() {
                             const label = serviceLabels[name] || name;
                             const isUp = status === 'up';
                             return (
-                                <div key={name} className="glass-card-hover p-4">
+                                <div key={name} className="glass-card-hover p-4 animate-fade-in-up" style={{ animationDelay: `${Object.keys(health.services).indexOf(name) * 0.05}s` }}>
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isUp ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20' : 'bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20'

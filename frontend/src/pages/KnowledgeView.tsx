@@ -34,7 +34,7 @@ export default function KnowledgeView() {
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500/20 to-emerald-500/20 border border-primary-500/20 flex items-center justify-center mx-auto mb-4">
                     <BookOpen className="w-8 h-8 text-primary-500 dark:text-primary-400" />
                 </div>
-                <h1 className="text-2xl font-bold text-surface-900 dark:text-white mb-2">Knowledge Explorer</h1>
+                <h1 className="text-3xl font-heading font-bold text-surface-900 dark:text-white mb-3">Knowledge Explorer</h1>
                 <p className="text-surface-500 dark:text-surface-400 max-w-md mx-auto">
                     Search across all your indexed documents using semantic similarity.
                     Find relevant passages even when exact keywords don't match.
@@ -82,7 +82,7 @@ export default function KnowledgeView() {
                         Found <span className="text-primary-400 font-semibold">{results.length}</span> relevant passages
                     </p>
                     {results.map((result, i) => (
-                        <div key={i} className="glass-card-hover p-5 animate-slide-up" style={{ animationDelay: `${i * 50}ms` }}>
+                        <div key={i} className="glass-card-hover p-5 animate-fade-in-up" style={{ animationDelay: `${i * 50}ms` }}>
                             <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
                                     <FileText className="w-4 h-4 text-primary-400" />

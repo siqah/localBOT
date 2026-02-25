@@ -25,7 +25,18 @@ contextBridge.exposeInMainWorld("electron", {
   },
   // Get the absolute filesystem path for a File object from <input type="file">
   getPathForFile: (file) => webUtils.getPathForFile(file),
-  // We can also add listener APIs if we want progress updates later
+
+  // Streaming token listeners
+  onChatToken: (callback) =>
+    ipcRenderer.on("chat:token", (_event, token) => callback(token)),
+  onChatTokenDone: (callback) =>
+    ipcRenderer.on("chat:token:done", () => callback()),
+  removeChatTokenListeners: () => {
+    ipcRenderer.removeAllListeners("chat:token");
+    ipcRenderer.removeAllListeners("chat:token:done");
+  },
+
+  // Progress updates
   onProgress: (callback) =>
     ipcRenderer.on("progress", (_event, data) => callback(data)),
   removeProgressListener: () => ipcRenderer.removeAllListeners("progress"),
