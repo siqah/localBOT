@@ -2,7 +2,7 @@
 
 > **Your private AI assistant that runs 100% offline — secure, fast, and works with all your local files.**
 
-## 🔐 The Problem
+##  The Problem
 
 Most AI assistants (ChatGPT, Copilot, Claude) require sending your data to cloud servers. This creates serious concerns when working with:
 
@@ -11,13 +11,13 @@ Most AI assistants (ChatGPT, Copilot, Claude) require sending your data to cloud
 - **Regulated environments** — industries with strict data residency requirements
 - **Personal privacy** — users who simply don't want their data leaving their machine
 
-## 💡 The Solution
+##  The Solution
 
 LocalBOT is a standalone, cross-platform **Electron desktop app** that lets you chat with your documents using a fully local **RAG (Retrieval-Augmented Generation)** pipeline. No cloud, no API keys, no internet — just download and run.
 
 Your documents are parsed, chunked, embedded, and indexed entirely on your machine. When you ask a question, the AI retrieves the most relevant passages from your knowledge base and generates an answer — all locally.
 
-## ✨ Features
+##  Features
 
 - 📄 **Document Management** — Upload and manage PDF, DOCX, TXT, Markdown, CSV, JSON, YAML, and HTML files
 - 🧠 **Local AI Models** — Embeddings via Transformers.js + LLM inference via node-llama-cpp (no API keys needed)
@@ -66,7 +66,7 @@ Your documents are parsed, chunked, embedded, and indexed entirely on your machi
 | **LLM** | `node-llama-cpp` (GGUF models) | Local text generation |
 | **IPC** | Electron `ipcMain` / `ipcRenderer` | Secure frontend ↔ backend communication |
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -111,7 +111,7 @@ Distributable installers are generated in `dist/`:
 - **Windows**: `.exe` (NSIS), `.zip`
 - **Linux**: `.AppImage`, `.deb`
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 localBOT/
@@ -149,7 +149,7 @@ localBOT/
     └── vite.config.ts        # Vite build configuration
 ```
 
-## 🔄 How It Works
+##  How It Works
 
 1. **Upload** — Drop a document (PDF, DOCX, etc.) into the app
 2. **Parse** — The file is converted to plain text using format-specific parsers
@@ -159,13 +159,13 @@ localBOT/
 6. **Query** — When you ask a question, your query is embedded and the most similar chunks are retrieved
 7. **Generate** — The retrieved context + your question are sent to the local LLM, which generates an answer with citations
 
-## 🛡️ Privacy & Security
+##  Privacy & Security
 
 - **No network calls** — The app makes zero HTTP requests. Everything runs locally
 - **Context isolation** — The Electron frontend runs in a sandboxed renderer with `contextIsolation: true`
 - **Whitelisted IPC** — Only pre-approved IPC channels can be invoked from the frontend
 - **Local storage** — All data (SQLite DB, vector index, models) is stored in the OS user data directory
 
-## 📜 License
+##  License
 
 MIT
